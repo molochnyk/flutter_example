@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_example/services/character_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +41,20 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    testCharacterService();
+  }
+
+  void testCharacterService() async {
+    final service = CharacterService();
+    final characters = await service.fetchCharacters();
+    for (final c in characters) {
+      print(c.name);
+    }
   }
 
   @override
