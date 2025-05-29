@@ -1,20 +1,24 @@
-import 'package:dio/dio.dart';
+import "package:flutter_example/core/network/request_service.dart";
+import "package:flutter_example/services/character_service_base.dart";
+import "package:flutter_example/data/mappers/character_mapper.dart";
+import "package:flutter_example/domain/entities/character.dart";
+import "package:flutter_example/constants/api_constants.dart";
+import "package:flutter_example/data/dtos/character_dto.dart";
 
-import '../data/dtos/character_dto.dart';
-import '../data/mappers/character_mapper.dart';
-import '../domain/entities/character.dart';
+class CharacterService implements CharacterServiceBase {
+  final RequestService _requestService;
 
-class CharacterService {
-  final Dio _dio;
+  CharacterService(this._requestService);
 
-  CharacterService({Dio? dio})
-    : _dio = dio ?? Dio(BaseOptions(baseUrl: "https://swapi.info/api"));
-
+  @override
   Future<List<Character>> fetchCharacters() async {
     try {
-      final response = await _dio.get("/people/");
+      final response = await _requestService.sendAsync(
+        method: HttpMethod.get,
+        url: ApiConstants.getPeople,
+      );
 
-      final results = response.data as List<dynamic>;
+      final results = response as List<dynamic>;
 
       final dtos = results.map((itm) => CharacterDto.fromJson(itm));
 
@@ -23,10 +27,8 @@ class CharacterService {
           .toList();
 
       return characters;
-    } on DioException catch (e) {
-      throw Exception("Dio error: ${e.message}");
     } catch (e) {
-      throw Exception('Unknown error: $e');
+      throw Exception("Failed to fetch characters: $e");
     }
   }
 }
