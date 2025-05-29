@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
+import 'package:flutter_example/core/network/dio_request_service.dart';
+import 'package:flutter_example/data/manager/character_manager.dart';
 import 'package:flutter_example/services/character_service.dart';
 
 void main() {
@@ -17,10 +16,10 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Example',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 245, 4, 84),
+          seedColor: const Color.fromARGB(255, 33, 2, 204),
         ),
       ),
-      home: const MyHomePage(title: 'Home Page'),
+      home: const MyHomePage(title: 'Home Page Title'),
     );
   }
 }
@@ -35,25 +34,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  late final CharacterManager _characterManager;
 
   @override
   void initState() {
     super.initState();
-    testCharacterService();
+
+    final requestService = DioRequestService();
+    final characterService = CharacterService(requestService);
+    _characterManager = CharacterManager(characterService);
+
+    testCharacterManager();
   }
 
-  void testCharacterService() async {
-    final service = CharacterService();
-    final characters = await service.fetchCharacters();
-    for (final c in characters) {
-      print(c.name);
+  Future<void> testCharacterManager() async {
+    try {
+      final characters = await _characterManager.getCharacters();
+      for (final c in characters) {
+        print(c.name);
+      }
+    } catch (e) {
+      print("Error loading characters: $e");
     }
   }
 
@@ -62,25 +63,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
         title: Text(widget.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+          children: <Widget>[const Text('Home Page Preview')],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
