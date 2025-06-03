@@ -1,20 +1,12 @@
-part of 'character_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_example/domain/entities/character.dart';
 
-@immutable
-sealed class CharacterState {}
+part 'character_state.freezed.dart';
 
-final class CharacterInitial extends CharacterState {}
-
-final class CharacterLoading extends CharacterState {}
-
-final class CharacterLoaded extends CharacterState {
-  final List<Character> characters;
-
-  CharacterLoaded(this.characters);
-}
-
-final class CharacterError extends CharacterState {
-  final String message;
-
-  CharacterError(this.message);
+@freezed
+class CharacterState with _$CharacterState {
+  const factory CharacterState.initial() = _Initial;
+  const factory CharacterState.loading() = _Loading;
+  const factory CharacterState.loaded(List<Character> characters) = _Loaded;
+  const factory CharacterState.error(String message) = _Error;
 }

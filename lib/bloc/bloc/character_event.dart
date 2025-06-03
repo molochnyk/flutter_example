@@ -1,6 +1,8 @@
-part of 'character_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-@immutable
-sealed class CharacterEvent {}
+part 'character_event.freezed.dart';
 
-final class LoadCharacters extends CharacterEvent {}
+@freezed
+class CharacterEvent with _$CharacterEvent {
+  const factory CharacterEvent.loadCharacters() = _LoadCharacters;
+}
